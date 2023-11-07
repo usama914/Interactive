@@ -28,7 +28,7 @@
         <div class="navbar-end">
           <div class="navbar-item">
             <div class="buttons">
-              <router-link to="/dashboard">
+              <router-link to="/">
                 <button class="button is-primary">Dashboard</button>
               </router-link>
             </div>
