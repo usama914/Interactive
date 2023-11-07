@@ -53,59 +53,74 @@
     <div class="container">
       <div class="video">
         <video controls>
-          <source src="your-video-source.mp4" type="video/mp4">
+          <source src="" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
     </div>
   </div>
+
   <div class="container selected mt-5">
-    <h3 class="title is-3">DashBoard</h3>
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Label</th>
-          <th>Interaction Count</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(element, index) in selectedElements" :key="index">
-          <td>{{ element.type }}</td>
-          <td>{{ element.label }}</td>
-          <td>{{ element.interactionCount }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <article class="panel is-primary">
+      <p class="panel-heading">
+        Dashboard
+      </p>
+      <a v-if="selectedElements?.length > 0" class="panel-block is-active" v-for="(element, index) in selectedElements"
+        :key="index">
+        <span class="panel-icon">
+          <i class="fas fa-book" aria-hidden="true"></i>
+        </span>
+        <p>{{ element.type }}</p>
+        <p>{{ element.label }}</p>
+        <p>{{ element.interactionCount }}</p>
+      </a>
+      <div class="" v-else>
+        <p>No Data</p>
+      </div>
+    </article>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      selectedRecord: [], // Local array to store selected elements
+    };
+  },
   computed: {
     selectedElements() {
-      return this.$store.getters.selectedElements;
+      return this.$store.getters.selectedElementsArray;
     }
   },
   methods: {
     sendEvent(type, label) {
-      // Simulate sending event to GTM (console log for mock endpoint)
       console.log(`Sending event to GTM: Type - ${type}, Label - ${label}`);
 
-      // Check if interactiveElements array is defined and not empty
       if (this.$store.state.interactiveElements && this.$store.state.interactiveElements.length > 0) {
-        // Find the selected element with the corresponding type and label
         const selectedElement = this.$store.state.interactiveElements.find(
           (element) => element.isSelected && element.type === type && element.label === label
         );
 
-        // If a selected element with the same type and label is found, increment its interaction count
         if (selectedElement) {
-          this.$store.commit('incrementInteractionCount', selectedElement);
+          // Check if the selected element is already in the local array
+          const existingElementIndex = this.selectedRecord.findIndex(
+            (element) => element.type === selectedElement.type && element.label === selectedElement.label
+          );
+
+          if (existingElementIndex !== -1) {
+            // If the selected element exists in the local array, remove it
+            this.selectedRecord.splice(existingElementIndex, 1);
+          } else {
+            // If the selected element does not exist in the local array, add it
+            this.selectedRecord.push(selectedElement);
+            this.$store.commit('incrementInteractionCount', selectedElement);
+          }
         }
       }
-    }
-  }
+    },
+  },
+
 };
 </script>
 

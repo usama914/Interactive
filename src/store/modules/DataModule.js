@@ -1,5 +1,6 @@
 const state = {
   selectionMode: false,
+  selectedElementsArray: [],
   interactiveElements: [
     {
       type: "button",
